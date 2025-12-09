@@ -1,0 +1,44 @@
+# This file configures the analyzer for Dart code quality and consistency.
+# Run `flutter analyze` to check for issues.
+
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    # Enforce good practices
+    prefer_const_constructors: true
+    prefer_const_declarations: true
+    prefer_final_fields: true
+    prefer_final_locals: true
+    prefer_single_quotes: true
+    require_trailing_commas: true
+    
+    # Avoid common issues
+    avoid_print: false  # Allow print for debugging, use logger in production
+    avoid_empty_else: true
+    avoid_returning_null_for_void: true
+    avoid_unnecessary_containers: true
+    avoid_web_libraries_in_flutter: true
+    
+    # Code style
+    always_declare_return_types: true
+    always_put_required_named_parameters_first: true
+    annotate_overrides: true
+    prefer_is_empty: true
+    prefer_is_not_empty: true
+    
+    # Performance
+    avoid_slow_async_io: true
+    cancel_subscriptions: true
+    close_sinks: true
+
+analyzer:
+  errors:
+    dead_code: warning
+    unused_import: warning
+    unused_local_variable: warning
+    deprecated_member_use: info
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/generated/**"
