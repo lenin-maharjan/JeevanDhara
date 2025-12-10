@@ -15,6 +15,8 @@ const bloodBankSchema = new mongoose.Schema({
   componentSeparation: { type: Boolean, default: false },
   apheresisService: { type: Boolean, default: false },
   password: { type: String }, // Handled by Firebase
+  latitude: { type: Number },
+  longitude: { type: Number },
   fcmToken: { type: String, default: null },
   firebaseUid: { type: String, unique: true, sparse: true } // Firebase Auth UID
 }, { timestamps: true });
