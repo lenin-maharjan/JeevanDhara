@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jeevandhara/screens/blood_bank/blood_bank_alerts_page.dart';
 import 'package:jeevandhara/screens/blood_bank/blood_bank_home_page.dart';
 import 'package:jeevandhara/screens/blood_bank/blood_bank_profile_page.dart';
-import 'package:flutter_translate/flutter_translate.dart';
+import 'package:jeevandhara/core/localization_helper.dart';
 
 class BloodBankMainScreen extends StatefulWidget {
   const BloodBankMainScreen({super.key});
@@ -59,3 +59,8 @@ class _BloodBankMainScreenState extends State<BloodBankMainScreen> {
     );
   }
 }
+
+
+
+
+

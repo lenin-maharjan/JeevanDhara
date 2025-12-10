@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:jeevandhara/providers/auth_provider.dart';
 import 'package:jeevandhara/screens/auth/login_screen.dart';
 import 'package:jeevandhara/screens/location_picker_screen.dart';
-import 'package:flutter_translate/flutter_translate.dart';
+import 'package:jeevandhara/core/localization_helper.dart';
 
 class RequesterProfileScreen extends StatefulWidget {
   const RequesterProfileScreen({super.key});
@@ -131,7 +131,7 @@ class _RequesterProfileScreenState extends State<RequesterProfileScreen> {
   }
   
   Widget _buildSettingsCard(BuildContext context) {
-    final currentLocale = LocalizedApp.of(context).delegate.currentLocale;
+    final currentLocale = getCurrentLocale(context);
     final isNepali = currentLocale.languageCode == 'ne';
 
     return Card(
@@ -757,3 +757,8 @@ class _RequesterProfileScreenState extends State<RequesterProfileScreen> {
     );
   }
 }
+
+
+
+
+

@@ -5,7 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:jeevandhara/providers/auth_provider.dart';
 import 'package:jeevandhara/screens/auth/login_screen.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:flutter_translate/flutter_translate.dart';
+import 'package:jeevandhara/core/localization_helper.dart';
+import 'package:geocoding/geocoding.dart';
 
 class DonorRegistrationScreen extends StatefulWidget {
   const DonorRegistrationScreen({super.key});
@@ -87,7 +88,27 @@ class _DonorRegistrationScreenState extends State<DonorRegistrationScreen> {
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(translate('location_services_disabled'))));
+      // Ask user to turn on location services
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(translate('location_disabled')),
+          content: Text(translate('enable_location_msg', args: {'app_name': 'Jeevan Dhara'})),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(translate('cancel')),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                await Geolocator.openLocationSettings();
+              },
+              child: Text(translate('open_settings')),
+            ),
+          ],
+        ),
+      );
       setState(() => _isLoadingLocation = false);
       return;
     }
@@ -123,6 +144,31 @@ class _DonorRegistrationScreenState extends State<DonorRegistrationScreen> {
       _longitude = position.longitude;
       _isLoadingLocation = false;
     });
+
+    // Reverse Geocoding
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks[0];
+        String? subAdmin = place.subAdministrativeArea;
+        String? locality = place.locality;
+        String? target = subAdmin ?? locality;
+
+        if (target != null) {
+          for (String district in _districts) {
+            if (target.contains(district)) {
+              if (!mounted) return;
+              setState(() {
+                _locationController.text = district;
+              });
+              break;
+            }
+          }
+        }
+      }
+    } catch (e) {
+      print("Geocoding failed: $e");
+    }
     
     print("Location fetched: $_latitude, $_longitude"); 
   }
@@ -232,6 +278,7 @@ class _DonorRegistrationScreenState extends State<DonorRegistrationScreen> {
   }
 
   void _showErrorDialog(String message) {
+    if (!mounted) return;
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -284,7 +331,7 @@ class _DonorRegistrationScreenState extends State<DonorRegistrationScreen> {
   }
 
   void _changeLanguage(BuildContext context) {
-    final currentLocale = LocalizedApp.of(context).delegate.currentLocale;
+    final currentLocale = getCurrentLocale(context);
     if (currentLocale.languageCode == 'en') {
       changeLocale(context, 'ne');
     } else {
@@ -325,8 +372,8 @@ class _DonorRegistrationScreenState extends State<DonorRegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var localizationDelegate = LocalizedApp.of(context).delegate;
-    final isNepali = localizationDelegate.currentLocale.languageCode == 'ne';
+    // // var localizationDelegate = LocalizedApp.of(context).delegate;
+    final isNepali = getCurrentLocale(context).languageCode == 'ne';
 
     String pageTitle = translate('be_the_reason');
     if (_currentPage == 1) {
@@ -848,3 +895,8 @@ class _DonorRegistrationScreenState extends State<DonorRegistrationScreen> {
     );
   }
 }
+
+
+
+
+

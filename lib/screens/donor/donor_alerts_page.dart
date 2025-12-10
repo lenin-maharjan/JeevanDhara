@@ -6,7 +6,7 @@ import 'package:jeevandhara/services/api_service.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:jeevandhara/screens/donor/donor_request_details_page.dart';
-import 'package:flutter_translate/flutter_translate.dart';
+import 'package:jeevandhara/core/localization_helper.dart';
 
 class DonorAlertsPage extends StatefulWidget {
   const DonorAlertsPage({super.key});
@@ -260,3 +260,8 @@ class _DonorAlertsPageState extends State<DonorAlertsPage> {
     );
   }
 }
+
+
+
+
+

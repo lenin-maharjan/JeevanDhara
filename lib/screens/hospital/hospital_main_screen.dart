@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jeevandhara/screens/hospital/hospital_alerts_page.dart';
 import 'package:jeevandhara/screens/hospital/hospital_home_page.dart';
 import 'package:jeevandhara/screens/hospital/hospital_profile_page.dart';
-import 'package:flutter_translate/flutter_translate.dart';
+import 'package:jeevandhara/core/localization_helper.dart';
 
 class HospitalMainScreen extends StatefulWidget {
   const HospitalMainScreen({super.key});
@@ -60,3 +60,8 @@ class _HospitalMainScreenState extends State<HospitalMainScreen> {
     );
   }
 }
+
+
+
+
+

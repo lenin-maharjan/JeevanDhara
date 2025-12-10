@@ -7,7 +7,7 @@ import 'package:jeevandhara/screens/main_screen.dart';
 import 'package:jeevandhara/screens/donor/donor_main_screen.dart';
 import 'package:jeevandhara/screens/blood_bank/blood_bank_main_screen.dart';
 import 'package:jeevandhara/screens/hospital/hospital_main_screen.dart';
-import 'package:flutter_translate/flutter_translate.dart';
+import 'package:jeevandhara/core/localization_helper.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -81,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _changeLanguage(BuildContext context) {
-    final currentLocale = LocalizedApp.of(context).delegate.currentLocale;
+    final currentLocale = getCurrentLocale(context);
     if (currentLocale.languageCode == 'en') {
       changeLocale(context, 'ne');
     } else {
@@ -92,8 +92,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final isLoading = Provider.of<AuthProvider>(context).isLoading;
-    var localizationDelegate = LocalizedApp.of(context).delegate;
-    final isNepali = localizationDelegate.currentLocale.languageCode == 'ne';
+    // // var localizationDelegate = LocalizedApp.of(context).delegate;
+    final isNepali = getCurrentLocale(context).languageCode == 'ne';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
@@ -315,3 +315,8 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
+
+
+
+

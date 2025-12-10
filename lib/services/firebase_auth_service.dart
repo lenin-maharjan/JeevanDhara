@@ -187,7 +187,7 @@ class FirebaseAuthService {
       case 'requires-recent-login':
         return 'This action requires you to have recently signed in. Please sign out and sign in again.';
       default:
-        return 'An authentication error occurred. Please try again.';
+        return 'An authentication error occurred. It might be due to a missing SHA-1 key in your Firebase project settings. Code: $code';
     }
   }
 }

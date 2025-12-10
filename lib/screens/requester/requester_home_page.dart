@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:jeevandhara/providers/auth_provider.dart';
 import 'package:jeevandhara/services/api_service.dart';
 import 'package:jeevandhara/models/blood_request_model.dart';
-import 'package:flutter_translate/flutter_translate.dart';
+import 'package:jeevandhara/core/localization_helper.dart';
 
 class RequesterHomePage extends StatefulWidget {
   const RequesterHomePage({super.key});
@@ -418,3 +418,8 @@ class _RequesterHomePageState extends State<RequesterHomePage> {
     );
   }
 }
+
+
+
+
+

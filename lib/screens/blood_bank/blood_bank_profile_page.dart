@@ -249,3 +249,8 @@ class _BloodBankProfilePageState extends State<BloodBankProfilePage> {
     return Row(children: [Icon(isChecked ? Icons.check_circle : Icons.cancel, color: isChecked ? Colors.green : Colors.grey, size: 20), const SizedBox(width: 12), Expanded(child: Text(text, style: const TextStyle(fontSize: 14)))]);
   }
 }
+
+
+
+
+

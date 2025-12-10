@@ -6,7 +6,7 @@ import 'package:jeevandhara/screens/auth/login_screen.dart';
 import 'package:jeevandhara/models/user_model.dart';
 import 'package:jeevandhara/services/api_service.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_translate/flutter_translate.dart';
+import 'package:jeevandhara/core/localization_helper.dart';
 
 class DonorProfilePage extends StatefulWidget {
   const DonorProfilePage({super.key});
@@ -374,7 +374,7 @@ class _DonorProfilePageState extends State<DonorProfilePage> {
   }
   
   Widget _buildSettingsCard(BuildContext context) {
-    final currentLocale = LocalizedApp.of(context).delegate.currentLocale;
+    final currentLocale = getCurrentLocale(context);
     final isNepali = currentLocale.languageCode == 'ne';
 
     return _buildSectionCard(
@@ -477,3 +477,8 @@ class _DonorProfilePageState extends State<DonorProfilePage> {
     );
   }
 }
+
+
+
+
+

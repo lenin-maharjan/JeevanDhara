@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:jeevandhara/providers/auth_provider.dart';
 import 'package:jeevandhara/screens/requester/blood_bank_map_screen.dart'; 
 import 'package:jeevandhara/screens/requester/requester_blood_bank_screen.dart' as requester;
-import 'package:flutter_translate/flutter_translate.dart';
+import 'package:jeevandhara/core/localization_helper.dart';
 
 class Hospital {
   final String id;
@@ -364,3 +364,8 @@ class DonorHospitalCard extends StatelessWidget {
     );
   }
 }
+
+
+
+
+

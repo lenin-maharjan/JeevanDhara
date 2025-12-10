@@ -3,7 +3,7 @@ import 'package:jeevandhara/screens/auth/blood_bank_registration_screen.dart';
 import 'package:jeevandhara/screens/auth/donor_registration_screen.dart';
 import 'package:jeevandhara/screens/auth/hospital_registration_screen.dart';
 import 'package:jeevandhara/screens/auth/requester_registration_screen.dart';
-import 'package:flutter_translate/flutter_translate.dart';
+import 'package:jeevandhara/core/localization_helper.dart';
 
 class UserSelectionScreen extends StatelessWidget {
   const UserSelectionScreen({super.key});
@@ -96,3 +96,8 @@ class UserSelectionScreen extends StatelessWidget {
     );
   }
 }
+
+
+
+
+

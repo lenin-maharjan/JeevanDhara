@@ -51,6 +51,11 @@ app.*.map.json
 
 # Secrets
 Backend/service-account-file.json
+server/service-account-file.json
+**/service-account-file.json
+server/*.json
+!server/package.json
+!server/package-lock.json
 google-services.json
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist

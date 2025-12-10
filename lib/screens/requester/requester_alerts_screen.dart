@@ -4,7 +4,7 @@ import 'package:jeevandhara/providers/auth_provider.dart';
 import 'package:jeevandhara/services/api_service.dart';
 import 'package:jeevandhara/services/notification_service.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_translate/flutter_translate.dart';
+import 'package:jeevandhara/core/localization_helper.dart';
 
 class RequesterAlertsScreen extends StatefulWidget {
   const RequesterAlertsScreen({super.key});
@@ -237,3 +237,8 @@ class _RequesterAlertsScreenState extends State<RequesterAlertsScreen> {
     );
   }
 }
+
+
+
+
+

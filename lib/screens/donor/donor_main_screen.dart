@@ -3,7 +3,7 @@ import 'package:jeevandhara/screens/donor/donor_alerts_page.dart';
 import 'package:jeevandhara/screens/donor/donor_home_page.dart';
 import 'package:jeevandhara/screens/donor/donor_profile_page.dart';
 import 'package:jeevandhara/screens/donor/donor_requests_page.dart';
-import 'package:flutter_translate/flutter_translate.dart';
+import 'package:jeevandhara/core/localization_helper.dart';
 
 class DonorMainScreen extends StatefulWidget {
   const DonorMainScreen({super.key});
@@ -31,7 +31,7 @@ class _DonorMainScreenState extends State<DonorMainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var localizationDelegate = LocalizedApp.of(context).delegate;
+    // // var localizationDelegate = LocalizedApp.of(context).delegate;
 
     return Scaffold(
       body: IndexedStack(
@@ -65,3 +65,8 @@ class _DonorMainScreenState extends State<DonorMainScreen> {
     );
   }
 }
+
+
+
+
+

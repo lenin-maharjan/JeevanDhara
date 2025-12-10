@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:jeevandhara/services/api_service.dart';
+import 'package:provider/provider.dart';
+import 'package:jeevandhara/providers/auth_provider.dart';
 import 'package:jeevandhara/screens/auth/login_screen.dart';
 
 class BloodBankRegistrationScreen extends StatefulWidget {
@@ -128,7 +129,11 @@ class _BloodBankRegistrationScreenState extends State<BloodBankRegistrationScree
       };
 
       try {
-        await ApiService().registerBloodBank(data);
+        await Provider.of<AuthProvider>(context, listen: false).register({
+          ...data,
+          'userType': 'blood_bank',
+        });
+
         if (mounted) {
           showDialog(
             context: context,
@@ -136,7 +141,7 @@ class _BloodBankRegistrationScreenState extends State<BloodBankRegistrationScree
             builder: (BuildContext context) {
               return AlertDialog(
                 title: const Text('Registration Successful', style: TextStyle(color: Color(0xFFD32F2F))),
-                content: const Text('Your account has been created successfully. Please login to continue.'),
+                content: const Text('Your account has been created successfully. The admin will verify your details shortly.'),
                 actions: [
                   TextButton(
                     onPressed: () {
@@ -155,7 +160,7 @@ class _BloodBankRegistrationScreenState extends State<BloodBankRegistrationScree
         }
       } catch (e) {
         if (mounted) {
-          _showErrorDialog('Registration Failed: ${e.toString().replaceAll('Exception:', '')}');
+          _showErrorDialog(Provider.of<AuthProvider>(context, listen: false).errorMessage ?? 'Registration Failed');
         }
       } finally {
         if (mounted) {
@@ -500,3 +505,8 @@ class _BloodBankRegistrationScreenState extends State<BloodBankRegistrationScree
     );
   }
 }
+
+
+
+
+

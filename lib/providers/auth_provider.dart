@@ -94,7 +94,7 @@ class AuthProvider with ChangeNotifier {
         await firebaseUser.delete();
         print('CLEANUP: Deleted orphaned Firebase user due to backend profile creation failure.');
       }
-      _errorMessage = 'Failed to create your profile. Please try again.';
+      _errorMessage = 'Failed to create profile: ${e.toString()}';
       _setLoading(false);
       return false;
     }
@@ -233,3 +233,8 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 }
+
+
+
+
+

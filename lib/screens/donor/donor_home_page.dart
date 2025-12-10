@@ -8,7 +8,7 @@ import 'package:jeevandhara/screens/donor/donor_donation_history_page.dart';
 import 'package:jeevandhara/screens/donor/donor_request_details_page.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_translate/flutter_translate.dart';
+import 'package:jeevandhara/core/localization_helper.dart';
 
 class DonorHomePage extends StatefulWidget {
   const DonorHomePage({super.key});
@@ -619,3 +619,8 @@ class _DonorHomePageState extends State<DonorHomePage> {
     );
   }
 }
+
+
+
+
+

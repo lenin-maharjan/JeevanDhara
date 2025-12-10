@@ -4,7 +4,7 @@ import 'package:jeevandhara/providers/auth_provider.dart';
 import 'package:jeevandhara/services/api_service.dart';
 import 'package:jeevandhara/models/blood_request_model.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_translate/flutter_translate.dart';
+import 'package:jeevandhara/core/localization_helper.dart';
 
 class DonorDonationHistoryPage extends StatefulWidget {
   const DonorDonationHistoryPage({super.key});
@@ -337,3 +337,8 @@ class _StatItem extends StatelessWidget {
     );
   }
 }
+
+
+
+
+

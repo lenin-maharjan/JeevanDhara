@@ -37,10 +37,10 @@ class ApiService {
       final response = await http.get(
         Uri.parse('${ApiConstants.baseUrl}/$endpoint'),
         headers: await _headers,
-      ).timeout(const Duration(seconds: 30));
+      ).timeout(const Duration(seconds: 90));
       return _handleResponse(response);
     } on TimeoutException {
-      throw Exception('Request timed out. Please try again.');
+      throw Exception('Request timed out. Server might be waking up (Cold Start). Please try again.');
     } catch (e) {
       throw Exception('Network error: $e');
     }
@@ -52,10 +52,10 @@ class ApiService {
         Uri.parse('${ApiConstants.baseUrl}/$endpoint'),
         headers: await _headers,
         body: jsonEncode(body),
-      ).timeout(const Duration(seconds: 30));
+      ).timeout(const Duration(seconds: 90));
       return _handleResponse(response);
     } on TimeoutException {
-      throw Exception('Request timed out. Please try again.');
+      throw Exception('Request timed out. Server might be waking up (Cold Start). Please try again.');
     } catch (e) {
       throw Exception('Network error: $e');
     }
@@ -67,10 +67,10 @@ class ApiService {
         Uri.parse('${ApiConstants.baseUrl}/$endpoint'),
         headers: await _headers,
         body: jsonEncode(body),
-      ).timeout(const Duration(seconds: 30));
+      ).timeout(const Duration(seconds: 90));
       return _handleResponse(response);
     } on TimeoutException {
-      throw Exception('Request timed out. Please try again.');
+      throw Exception('Request timed out. Server might be waking up (Cold Start). Please try again.');
     } catch (e) {
       throw Exception('Network error: $e');
     }
@@ -82,10 +82,10 @@ class ApiService {
         Uri.parse('${ApiConstants.baseUrl}/$endpoint'),
         headers: await _headers,
         body: jsonEncode(body),
-      ).timeout(const Duration(seconds: 30));
+      ).timeout(const Duration(seconds: 90));
       return _handleResponse(response);
     } on TimeoutException {
-      throw Exception('Request timed out. Please try again.');
+      throw Exception('Request timed out. Server might be waking up (Cold Start). Please try again.');
     } catch (e) {
       throw Exception('Network error: $e');
     }
@@ -96,10 +96,10 @@ class ApiService {
       final response = await http.delete(
         Uri.parse('${ApiConstants.baseUrl}/$endpoint'),
         headers: await _headers,
-      ).timeout(const Duration(seconds: 30));
+      ).timeout(const Duration(seconds: 90));
       return _handleResponse(response);
     } on TimeoutException {
-      throw Exception('Request timed out. Please try again.');
+      throw Exception('Request timed out. Server might be waking up (Cold Start). Please try again.');
     } catch (e) {
       throw Exception('Network error: $e');
     }
@@ -438,3 +438,8 @@ class ApiService {
     return await post('auth/link-firebase', {'userType': userType});
   }
 }
+
+
+
+
+

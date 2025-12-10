@@ -188,3 +188,8 @@ class _BloodBankMapScreenState extends State<BloodBankMapScreen> {
     mapController.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
   }
 }
+
+
+
+
+

@@ -3,7 +3,7 @@ import 'package:jeevandhara/screens/requester/requester_alerts_screen.dart';
 import 'package:jeevandhara/screens/requester/requester_home_page.dart';
 import 'package:jeevandhara/screens/requester/requester_my_requests_screen.dart';
 import 'package:jeevandhara/screens/requester/requester_profile_screen.dart';
-import 'package:flutter_translate/flutter_translate.dart';
+import 'package:jeevandhara/core/localization_helper.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -32,7 +32,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     // This ensures the widget rebuilds when locale changes
-    var localizationDelegate = LocalizedApp.of(context).delegate;
+    // // var localizationDelegate = LocalizedApp.of(context).delegate;
     
     return Scaffold(
       // Re-generating the widgets list on every build ensures they get the new locale
@@ -85,3 +85,8 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
+
+
+
+
+

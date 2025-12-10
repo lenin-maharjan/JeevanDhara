@@ -5,7 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:jeevandhara/providers/auth_provider.dart';
 import 'package:jeevandhara/screens/auth/login_screen.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:flutter_translate/flutter_translate.dart';
+import 'package:jeevandhara/core/localization_helper.dart';
+import 'package:geocoding/geocoding.dart';
 
 class RequesterRegistrationScreen extends StatefulWidget {
   const RequesterRegistrationScreen({super.key});
@@ -56,6 +57,18 @@ class _RequesterRegistrationScreenState
     "Rolpa", "Rupandehi", "Salyan", "Sankhuwasabha", "Saptari", "Sarlahi", "Sindhuli", "Sindhupalchok", "Siraha",
     "Solukhumbu", "Sunsari", "Surkhet", "Syangja", "Tanahun", "Taplejung", "Terhathum", "Udayapur", "Western Rukum"
   ];
+  
+  final List<String> _hospitals = [
+    "Bir Hospital", "Tribhuvan University Teaching Hospital", "Patan Hospital", "Civil Service Hospital", 
+    "Grande International Hospital", "Norvic International Hospital", "Nepal Mediciti Hospital", 
+    "Dhulikhel Hospital", "Bhaktapur Hospital", "Kanti Children's Hospital", 
+    "Paropakar Maternity and Women's Hospital", "Sukraraj Tropical and Infectious Disease Hospital", 
+    "National Trauma Center", "Shahid Gangalal National Heart Center", "Tilganga Institute of Ophthalmology", 
+    "Nepal Eye Hospital", "Alka Hospital", "Vayodha Hospitals", "Kathmandu Medical College", 
+    "Nepal Medical College", "Kist Medical College", "Om Hospital & Research Centre", 
+    "Helping Hands Community Hospital", "Green City Hospital", "Vinayak Hospital", "Hams Hospital",
+    "Chirayu Hospital", "Manmohan Memorial Medical College"
+  ];
 
   @override
   void dispose() {
@@ -83,7 +96,27 @@ class _RequesterRegistrationScreenState
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(translate('location_services_disabled'))));
+      // Ask user to turn on location services
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(translate('location_disabled')),
+          content: Text(translate('enable_location_msg', args: {'app_name': 'Jeevan Dhara'})),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(translate('cancel')),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                await Geolocator.openLocationSettings();
+              },
+              child: Text(translate('open_settings')),
+            ),
+          ],
+        ),
+      );
       setState(() => _isLoadingLocation = false);
       return;
     }
@@ -120,6 +153,33 @@ class _RequesterRegistrationScreenState
         _longitude = position.longitude;
         _isLoadingLocation = false;
       });
+
+      // Reverse Geocoding
+      try {
+        List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+        if (placemarks.isNotEmpty) {
+          Placemark place = placemarks[0];
+          // Try to fuzzy match district
+          String? subAdmin = place.subAdministrativeArea; // e.g. "Kathmandu District"
+          String? locality = place.locality; // e.g. "Kathmandu"
+          
+          String? target = subAdmin ?? locality;
+          
+          if (target != null) {
+            for (String district in _districts) {
+              if (target.contains(district)) {
+                if (!mounted) return;
+                setState(() {
+                  _locationController.text = district;
+                });
+                break;
+              }
+            }
+          }
+        }
+      } catch (e) {
+        print("Geocoding failed: $e");
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoadingLocation = false);
@@ -215,6 +275,7 @@ class _RequesterRegistrationScreenState
   }
 
   void _showErrorDialog(String message) {
+    if (!mounted) return;
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -239,7 +300,7 @@ class _RequesterRegistrationScreenState
   }
 
   void _changeLanguage(BuildContext context) {
-    final currentLocale = LocalizedApp.of(context).delegate.currentLocale;
+    final currentLocale = getCurrentLocale(context);
     if (currentLocale.languageCode == 'en') {
       changeLocale(context, 'ne');
     } else {
@@ -278,8 +339,8 @@ class _RequesterRegistrationScreenState
 
   @override
   Widget build(BuildContext context) {
-    var localizationDelegate = LocalizedApp.of(context).delegate;
-    final isNepali = localizationDelegate.currentLocale.languageCode == 'ne';
+    // // var localizationDelegate = LocalizedApp.of(context).delegate;
+    final isNepali = getCurrentLocale(context).languageCode == 'ne';
 
     final pageTitle = _currentPage == 0
         ? translate('join_life_saving_network')
@@ -556,10 +617,39 @@ class _RequesterRegistrationScreenState
               contentPadding: EdgeInsets.zero,
             ),
             const SizedBox(height: 20),
-            _buildTextFormField(
-              controller: _hospitalController,
-              label: translate('hospital_name'),
-              validator: (v) => v!.isEmpty ? translate('hospital_required') : null,
+            Autocomplete<String>(
+              optionsBuilder: (TextEditingValue textEditingValue) {
+                if (textEditingValue.text == '') {
+                  return const Iterable<String>.empty();
+                }
+                return _hospitals.where((String option) {
+                  return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
+                });
+              },
+              onSelected: (String selection) {
+                _hospitalController.text = selection;
+              },
+              fieldViewBuilder: (BuildContext context, TextEditingController textEditingController, FocusNode focusNode, VoidCallback onFieldSubmitted) {
+                 if (textEditingController.text != _hospitalController.text) {
+                    textEditingController.text = _hospitalController.text;
+                 }
+                 
+                 textEditingController.addListener(() {
+                   _hospitalController.text = textEditingController.text;
+                 });
+
+                 return TextFormField(
+                    controller: textEditingController,
+                    focusNode: focusNode,
+                    decoration: InputDecoration(
+                      labelText: translate('hospital_name'),
+                      hintText: translate('select_hospital'),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      suffixIcon: const Icon(Icons.local_hospital),
+                    ),
+                    validator: (v) => v!.isEmpty ? translate('hospital_required') : null,
+                 );
+              },
             ),
             const SizedBox(height: 32),
             ElevatedButton(
@@ -698,3 +788,8 @@ class _RequesterRegistrationScreenState
     );
   }
 }
+
+
+
+
+
