@@ -8,6 +8,7 @@ const requesterSchema = new mongoose.Schema({
   hospitalLocation: { type: String },
   hospitalPhone: { type: String },
   location: { type: String },
+  fullAddress: { type: String }, // ADD: Store full readable address from geocoding
   latitude: { type: Number },
   longitude: { type: Number },
   age: { type: Number },

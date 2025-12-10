@@ -30,13 +30,18 @@ class _RequesterRegistrationScreenState
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController(text: '+977');
   final _locationController = TextEditingController();
+  final _fullAddressController = TextEditingController(); // ADD: Store full readable address
   final _ageController = TextEditingController();
   final _hospitalController = TextEditingController();
+  final _hospitalLocationController = TextEditingController(); // ADD: For auto-fill
+  final _hospitalPhoneController = TextEditingController(); // ADD: For auto-fill
   String? _gender;
   
   // Location variables
   double? _latitude;
   double? _longitude;
+  double? _hospitalLatitude; // ADD: Store hospital coords
+  double? _hospitalLongitude; // ADD: Store hospital coords
   bool _isLoadingLocation = false;
 
   // Step 2 Controllers & Variables
@@ -57,18 +62,7 @@ class _RequesterRegistrationScreenState
     "Rolpa", "Rupandehi", "Salyan", "Sankhuwasabha", "Saptari", "Sarlahi", "Sindhuli", "Sindhupalchok", "Siraha",
     "Solukhumbu", "Sunsari", "Surkhet", "Syangja", "Tanahun", "Taplejung", "Terhathum", "Udayapur", "Western Rukum"
   ];
-  
-  final List<String> _hospitals = [
-    "Bir Hospital", "Tribhuvan University Teaching Hospital", "Patan Hospital", "Civil Service Hospital", 
-    "Grande International Hospital", "Norvic International Hospital", "Nepal Mediciti Hospital", 
-    "Dhulikhel Hospital", "Bhaktapur Hospital", "Kanti Children's Hospital", 
-    "Paropakar Maternity and Women's Hospital", "Sukraraj Tropical and Infectious Disease Hospital", 
-    "National Trauma Center", "Shahid Gangalal National Heart Center", "Tilganga Institute of Ophthalmology", 
-    "Nepal Eye Hospital", "Alka Hospital", "Vayodha Hospitals", "Kathmandu Medical College", 
-    "Nepal Medical College", "Kist Medical College", "Om Hospital & Research Centre", 
-    "Helping Hands Community Hospital", "Green City Hospital", "Vinayak Hospital", "Hams Hospital",
-    "Chirayu Hospital", "Manmohan Memorial Medical College"
-  ];
+
 
   @override
   void dispose() {
@@ -79,6 +73,8 @@ class _RequesterRegistrationScreenState
     _locationController.dispose();
     _ageController.dispose();
     _hospitalController.dispose();
+    _hospitalLocationController.dispose();
+    _hospitalPhoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -159,6 +155,18 @@ class _RequesterRegistrationScreenState
         List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
         if (placemarks.isNotEmpty) {
           Placemark place = placemarks[0];
+          
+          // Build full readable address
+          List<String> addressParts = [];
+          if (place.street != null && place.street!.isNotEmpty) addressParts.add(place.street!);
+          if (place.subLocality != null && place.subLocality!.isNotEmpty) addressParts.add(place.subLocality!);
+          if (place.locality != null && place.locality!.isNotEmpty) addressParts.add(place.locality!);
+          if (place.subAdministrativeArea != null && place.subAdministrativeArea!.isNotEmpty) {
+            addressParts.add(place.subAdministrativeArea!);
+          }
+          
+          String fullAddress = addressParts.join(', ');
+          
           // Try to fuzzy match district
           String? subAdmin = place.subAdministrativeArea; // e.g. "Kathmandu District"
           String? locality = place.locality; // e.g. "Kathmandu"
@@ -171,10 +179,19 @@ class _RequesterRegistrationScreenState
                 if (!mounted) return;
                 setState(() {
                   _locationController.text = district;
+                  _fullAddressController.text = fullAddress; // Save full address
                 });
                 break;
               }
             }
+          }
+          
+          // If district not matched still save the full address
+          if (_fullAddressController.text.isEmpty && fullAddress.isNotEmpty) {
+            if (!mounted) return;
+            setState(() {
+              _fullAddressController.text = fullAddress;
+            });
           }
         }
       } catch (e) {
@@ -228,10 +245,13 @@ class _RequesterRegistrationScreenState
         'email': _emailController.text,
         'phone': _phoneController.text,
         'location': _locationController.text,
+        'fullAddress': _fullAddressController.text, // ADD: Send full address
         'latitude': _latitude,
         'longitude': _longitude,
         'age': int.tryParse(_ageController.text),
         'hospitalName': _hospitalController.text,
+        'hospitalLocation': _hospitalLocationController.text.isEmpty ? null : _hospitalLocationController.text, // ADD
+        'hospitalPhone': _hospitalPhoneController.text.isEmpty ? null : _hospitalPhoneController.text, // ADD
         'gender': _gender,
         'bloodGroup': _bloodGroup,
         'isEmergency': _isEmergency,
@@ -617,40 +637,133 @@ class _RequesterRegistrationScreenState
               contentPadding: EdgeInsets.zero,
             ),
             const SizedBox(height: 20),
-            Autocomplete<String>(
-              optionsBuilder: (TextEditingValue textEditingValue) {
-                if (textEditingValue.text == '') {
-                  return const Iterable<String>.empty();
-                }
-                return _hospitals.where((String option) {
-                  return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
-                });
-              },
-              onSelected: (String selection) {
-                _hospitalController.text = selection;
-              },
-              fieldViewBuilder: (BuildContext context, TextEditingController textEditingController, FocusNode focusNode, VoidCallback onFieldSubmitted) {
-                 if (textEditingController.text != _hospitalController.text) {
-                    textEditingController.text = _hospitalController.text;
-                 }
-                 
-                 textEditingController.addListener(() {
-                   _hospitalController.text = textEditingController.text;
-                 });
+            // Hospital search with auto-fill
+            LayoutBuilder(
+              builder: (context, constraints) {
+                return Autocomplete<Map<String, dynamic>>(
+                  optionsBuilder: (TextEditingValue textEditingValue) async {
+                    if (textEditingValue.text.length < 2) {
+                      return const Iterable<Map<String, dynamic>>.empty();
+                    }
+                    try {
+                      final hospitals = await ApiService().searchHospitals(textEditingValue.text);
+                      return hospitals.cast<Map<String, dynamic>>();
+                    } catch (e) {
+                      return const Iterable<Map<String, dynamic>>.empty();
+                    }
+                  },
+                  displayStringForOption: (option) => option['hospitalName'] ?? '',
+                  onSelected: (Map<String, dynamic> selection) {
+                    setState(() {
+                      _hospitalController.text = selection['hospitalName'] ?? '';
+                      
+                      // Auto-fill location
+                      final address = selection['address'] ?? '';
+                      final city = selection['city'] ?? '';
+                      final district = selection['district'] ?? '';
+                      final fullAddress = [address, city, district]
+                          .where((s) => s.toString().isNotEmpty)
+                          .join(', ');
+                      _hospitalLocationController.text = fullAddress.isNotEmpty ? fullAddress : '';
+                      
+                      // Auto-fill phone
+                      _hospitalPhoneController.text = selection['phoneNumber'] ?? '';
+                      
+                      // Store hospital coordinates
+                      if (selection['latitude'] != null && selection['longitude'] != null) {
+                        _hospitalLatitude = (selection['latitude'] as num).toDouble();
+                        _hospitalLongitude = (selection['longitude'] as num).toDouble();
+                      }
+                    });
+                  },
+                  fieldViewBuilder: (BuildContext context, TextEditingController textEditingController, FocusNode focusNode, VoidCallback onFieldSubmitted) {
+                    if (textEditingController.text != _hospitalController.text) {
+                      textEditingController.text = _hospitalController.text;
+                    }
+                    
+                    textEditingController.addListener(() {
+                      _hospitalController.text = textEditingController.text;
+                    });
 
-                 return TextFormField(
-                    controller: textEditingController,
-                    focusNode: focusNode,
-                    decoration: InputDecoration(
-                      labelText: translate('hospital_name'),
-                      hintText: translate('select_hospital'),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                      suffixIcon: const Icon(Icons.local_hospital),
-                    ),
-                    validator: (v) => v!.isEmpty ? translate('hospital_required') : null,
-                 );
-              },
+                    return TextFormField(
+                      controller: textEditingController,
+                      focusNode: focusNode,
+                      decoration: InputDecoration(
+                        labelText: translate('hospital_name'),
+                        hintText: 'Type to search hospitals...',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        suffixIcon: const Icon(Icons.search),
+                      ),
+                      validator: (v) => v!.isEmpty ? translate('hospital_required') : null,
+                    );
+                  },
+                  optionsViewBuilder: (context, onSelected, options) {
+                    return Align(
+                      alignment: Alignment.topLeft,
+                      child: Material(
+                        elevation: 4.0,
+                        child: SizedBox(
+                          width: constraints.maxWidth,
+                          height: 200,
+                          child: ListView.builder(
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            itemCount: options.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              final option = options.elementAt(index);
+                              return ListTile(
+                                title: Text(option['hospitalName'] ?? ''),
+                                subtitle: Text(option['address'] ?? ''),
+                                onTap: () {
+                                  onSelected(option);
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }
             ),
+            if (_hospitalLocationController.text.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 12.0),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.green.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.green.shade200),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.check_circle, size: 16, color: Colors.green.shade700),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Auto-filled Hospital Details:',
+                            style: TextStyle(fontWeight: FontWeight.w600, color: Colors.green.shade700, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Location: ${_hospitalLocationController.text}',
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                      if (_hospitalPhoneController.text.isNotEmpty)
+                        Text(
+                          'Phone: ${_hospitalPhoneController.text}',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
             const SizedBox(height: 32),
             ElevatedButton(
               onPressed: _nextPage,

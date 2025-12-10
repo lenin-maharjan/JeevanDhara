@@ -57,6 +57,7 @@ class _RequesterProfileScreenState extends State<RequesterProfileScreen> {
                             translate('full_name'): user.fullName ?? '',
                             translate('email'): user.email ?? '',
                             translate('phone'): user.phone ?? '',
+                            translate('blood_group'): user.bloodGroup ?? translate('not_set'), // ADD: Show blood type
                           },
                         ),
                         _buildHospitalContactsCard(user),
@@ -639,7 +640,7 @@ class _RequesterProfileScreenState extends State<RequesterProfileScreen> {
             _buildContactRow(
               Icons.location_on_outlined,
               translate('location'),
-              user?.hospitalLocation ?? user?.location ?? translate('add_location'),
+              user?.fullAddress ?? user?.hospitalLocation ?? user?.location ?? translate('add_location'), // Show full address first
             ),
             const SizedBox(height: 16),
             _buildContactRow(
