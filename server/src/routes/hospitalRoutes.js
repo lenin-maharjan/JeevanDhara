@@ -1,21 +1,19 @@
 const express = require('express');
-const { 
-  registerHospital, 
-  getAllHospitals, 
-  requestBlood, 
-  getBloodRequests, 
+const {
+  getAllHospitals,
+  requestBlood,
+  getBloodRequests,
   updateBloodRequest,
-  updateDeliveryStatus, 
-  getBloodStock, 
-  addBloodStock, 
-  updateBloodStock, 
+  updateDeliveryStatus,
+  getBloodStock,
+  addBloodStock,
+  updateBloodStock,
   removeBloodStock,
   getHospitalDonations
 } = require('../controllers/hospitalController');
 
 const router = express.Router();
 
-router.post('/register', registerHospital);
 router.get('/', getAllHospitals);
 router.post('/:hospitalId/blood-requests', requestBlood);
 router.get('/:hospitalId/blood-requests', getBloodRequests);

@@ -1,9 +1,8 @@
 const express = require('express');
-const { registerBloodBank, getAllBloodBanks, getBloodBankProfile, seedData, recordDonation, getDonations, recordDistribution, getDistributions, getBloodBankRequests } = require('../controllers/bloodBankController');
+const { getAllBloodBanks, getBloodBankProfile, seedData, recordDonation, getDonations, recordDistribution, getDistributions, getBloodBankRequests } = require('../controllers/bloodBankController');
 
 const router = express.Router();
 
-router.post('/register', registerBloodBank);
 router.get('/', getAllBloodBanks);
 router.get('/seed', seedData);
 router.get('/:id', getBloodBankProfile);
