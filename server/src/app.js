@@ -71,11 +71,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // ===== ADMIN PANEL ROUTES =====
-// IMPORTANT: Order matters! Static files must be served BEFORE specific routes
-
-// Serve static files for admin panel (CSS, JS, images)
-// This MUST come first to allow /admin/styles.css, /admin/script.js, etc. to work
-app.use('/admin', express.static(path.join(__dirname, '../public')));
+// CRITICAL: Specific routes MUST come before wildcard static file serving!
 
 // Admin Login/Logout API (public - no auth required)
 app.post('/admin/login', (req, res) => {
@@ -101,7 +97,7 @@ app.post('/admin/logout', (req, res) => {
   });
 });
 
-// Admin HTML Pages
+// Admin HTML Pages - Specific routes first!
 app.get('/admin/login', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/login.html'));
 });
@@ -118,6 +114,10 @@ app.get('/admin', (req, res) => {
     res.redirect('/admin/login');
   }
 });
+
+// Serve static files for admin panel (CSS, JS, images) - AFTER specific routes
+// This catches /admin/styles.css, /admin/script.js, etc.
+app.use('/admin', express.static(path.join(__dirname, '../public')));
 
 // ===== API ROUTES =====
 app.use('/api/v1', apiRoutes);
