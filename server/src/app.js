@@ -70,7 +70,14 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-// Admin Login Routes (public - no auth required)
+// ===== ADMIN PANEL ROUTES =====
+// IMPORTANT: Order matters! Static files must be served BEFORE specific routes
+
+// Serve static files for admin panel (CSS, JS, images)
+// This MUST come first to allow /admin/styles.css, /admin/script.js, etc. to work
+app.use('/admin', express.static(path.join(__dirname, '../public')));
+
+// Admin Login/Logout API (public - no auth required)
 app.post('/admin/login', (req, res) => {
   const { username, password } = req.body;
 
@@ -94,12 +101,11 @@ app.post('/admin/logout', (req, res) => {
   });
 });
 
-// Admin login page (public - no auth required)
+// Admin HTML Pages
 app.get('/admin/login', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/login.html'));
 });
 
-// Admin dashboard route (protected)
 app.get('/admin/dashboard', checkAdminAuth, (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
@@ -113,10 +119,7 @@ app.get('/admin', (req, res) => {
   }
 });
 
-// Serve static files for admin panel
-app.use('/admin', express.static(path.join(__dirname, '../public')));
-
-// API Routes
+// ===== API ROUTES =====
 app.use('/api/v1', apiRoutes);
 
 // Error handler
