@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const compression = require('compression');
 const apiRoutes = require('./routes');
@@ -54,6 +55,14 @@ if (process.env.NODE_ENV !== 'production') {
     next();
   });
 }
+
+// Serve static files for admin panel
+app.use('/admin', express.static(path.join(__dirname, '../public')));
+
+// Admin panel dashboard route
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
+});
 
 // API Routes
 app.use('/api/v1', apiRoutes);

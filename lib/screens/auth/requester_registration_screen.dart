@@ -7,6 +7,8 @@ import 'package:jeevandhara/screens/auth/login_screen.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:jeevandhara/core/localization_helper.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:jeevandhara/services/api_service.dart'; // ADD: For hospital search
+
 
 class RequesterRegistrationScreen extends StatefulWidget {
   const RequesterRegistrationScreen({super.key});

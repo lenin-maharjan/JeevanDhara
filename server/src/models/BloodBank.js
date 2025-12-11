@@ -17,6 +17,8 @@ const bloodBankSchema = new mongoose.Schema({
   password: { type: String }, // Handled by Firebase
   latitude: { type: Number },
   longitude: { type: Number },
+  isVerified: { type: Boolean, default: false },
+  verificationStatus: { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' },
   fcmToken: { type: String, default: null },
   firebaseUid: { type: String, unique: true, sparse: true } // Firebase Auth UID
 }, { timestamps: true });

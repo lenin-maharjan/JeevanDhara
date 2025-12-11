@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeevan Dhara - Admin Panel</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1 class="logo">🩸 Jeevan Dhara</h1>
+                    <span class="admin-badge">Admin Panel</span>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-refresh" onclick="loadData()">
+                        <span class="icon">🔄</span>
+                        <span>Refresh</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Stats -->
+        <section class="stats-section">
+            <h2 class="section-title">Dashboard Overview</h2>
+            <div class="stats-grid">
+                <div class="stat-card hospital-card">
+                    <div class="stat-icon">🏥</div>
+                    <div class="stat-content">
+                        <h3 class="stat-title">Hospitals</h3>
+                        <div class="stat-numbers">
+                            <div class="stat-item">
+                                <span class="stat-label">Pending</span>
+                                <span class="stat-value pending" id="hospitals-pending">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Verified</span>
+                                <span class="stat-value verified" id="hospitals-verified">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Total</span>
+                                <span class="stat-value" id="hospitals-total">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card bloodbank-card">
+                    <div class="stat-icon">🏛️</div>
+                    <div class="stat-content">
+                        <h3 class="stat-title">Blood Banks</h3>
+                        <div class="stat-numbers">
+                            <div class="stat-item">
+                                <span class="stat-label">Pending</span>
+                                <span class="stat-value pending" id="bloodbanks-pending">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Verified</span>
+                                <span class="stat-value verified" id="bloodbanks-verified">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Total</span>
+                                <span class="stat-value" id="bloodbanks-total">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tabs -->
+        <section class="tabs-section">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('pending-hospitals')">
+                    Pending Hospitals
+                    <span class="tab-badge" id="tab-badge-ph">0</span>
+                </button>
+                <button class="tab" onclick="switchTab('pending-bloodbanks')">
+                    Pending Blood Banks
+                    <span class="tab-badge" id="tab-badge-pb">0</span>
+                </button>
+                <button class="tab" onclick="switchTab('verified-hospitals')">
+                    Verified Hospitals
+                </button>
+                <button class="tab" onclick="switchTab('verified-bloodbanks')">
+                    Verified Blood Banks
+                </button>
+            </div>
+        </section>
+
+        <!-- Content Panels -->
+        <section class="content-section">
+            <!-- Pending Hospitals -->
+            <div id="pending-hospitals" class="tab-content active">
+                <h2 class="section-title">Pending Hospital Registrations</h2>
+                <div id="pending-hospitals-list" class="cards-grid"></div>
+            </div>
+
+            <!-- Pending Blood Banks -->
+            <div id="pending-bloodbanks" class="tab-content">
+                <h2 class="section-title">Pending Blood Bank Registrations</h2>
+                <div id="pending-bloodbanks-list" class="cards-grid"></div>
+            </div>
+
+            <!-- Verified Hospitals -->
+            <div id="verified-hospitals" class="tab-content">
+                <h2 class="section-title">Verified Hospitals</h2>
+                <div id="verified-hospitals-list" class="cards-grid"></div>
+            </div>
+
+            <!-- Verified Blood Banks -->
+            <div id="verified-bloodbanks" class="tab-content">
+                <h2 class="section-title">Verified Blood Banks</h2>
+                <div id="verified-bloodbanks-list" class="cards-grid"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

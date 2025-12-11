@@ -5,6 +5,7 @@ const donorRoutes = require('./donorRoutes');
 const hospitalRoutes = require('./hospitalRoutes');
 const bloodBankRoutes = require('./bloodBankRoutes');
 const bloodRequestRoutes = require('./bloodRequestRoutes');
+const adminRoutes = require('./adminRoutes');
 
 const router = express.Router();
 
@@ -23,5 +24,6 @@ router.use('/donors', donorRoutes);
 router.use('/hospitals', hospitalRoutes);
 router.use('/blood-banks', bloodBankRoutes);
 router.use('/blood-requests', bloodRequestRoutes);
+router.use('/admin', adminRoutes);
 
 module.exports = router;
