@@ -29,21 +29,64 @@ async function loadData() {
         showToast('Data loaded successfully', 'success');
     } catch (error) {
         console.error('Error loading data:', error);
-        showToast('Failed to load data', 'error');
+        // Check if error is due to unauthorized access
+        if (error.message.includes('Unauthorized')) {
+            window.location.href = '/admin/login';
+        } else {
+            showToast('Failed to load data', 'error');
+        }
     } finally {
         showLoading(false);
     }
 }
 
+// Logout function
+async function logout() {
+    if (!confirm('Are you sure you want to logout?')) return;
+
+    showLoading(true);
+    try {
+        const response = await fetch('/admin/logout', {
+            method: 'POST'
+        });
+
+        if (response.ok) {
+            window.location.href = '/admin/login';
+        } else {
+            throw new Error('Logout failed');
+        }
+    } catch (error) {
+        console.error('Logout error:', error);
+        showToast('Logout failed', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// Helper function to handle API calls with auth check
+async function fetchWithAuth(url, options = {}) {
+    const response = await fetch(url, options);
+
+    if (response.status === 401) {
+        // Unauthorized - redirect to login
+        window.location.href = '/admin/login';
+        throw new Error('Unauthorized');
+    }
+
+    return response;
+}
+
 // Load stats
 async function loadStats() {
     try {
-        const response = await fetch(`${API_BASE}/stats`);
+        const response = await fetchWithAuth(`${API_BASE}/stats`);
         const stats = await response.json();
         data.stats = stats;
         updateStatsUI(stats);
     } catch (error) {
-        console.error('Error loading stats:', error);
+        if (error.message !== 'Unauthorized') {
+            console.error('Error loading stats:', error);
+        }
     }
 }
 

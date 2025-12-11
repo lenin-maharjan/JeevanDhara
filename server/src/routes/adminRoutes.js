@@ -10,8 +10,12 @@ const {
     rejectBloodBank,
     getAdminStats
 } = require('../controllers/adminController');
+const { checkAdminAuth } = require('../middleware/adminAuthMiddleware');
 
 const router = express.Router();
+
+// Apply authentication middleware to ALL admin routes
+router.use(checkAdminAuth);
 
 // Dashboard stats
 router.get('/stats', getAdminStats);

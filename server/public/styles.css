@@ -77,7 +77,13 @@ body {
     font-weight: 600;
 }
 
-.btn-refresh {
+.header-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.btn-refresh,
+.btn-logout {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
@@ -94,6 +100,19 @@ body {
 .btn-refresh:hover {
     background: var(--accent-color);
     border-color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.btn-logout {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.btn-logout:hover {
+    background: var(--danger);
+    color: white;
     transform: translateY(-2px);
     box-shadow: var(--shadow);
 }
@@ -435,7 +454,9 @@ body {
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Toast Notifications */
@@ -467,6 +488,7 @@ body {
         transform: translateX(400px);
         opacity: 0;
     }
+
     to {
         transform: translateX(0);
         opacity: 1;
@@ -511,31 +533,31 @@ body {
     .container {
         padding: 1rem;
     }
-    
+
     .header {
         padding: 1rem;
     }
-    
+
     .header-content {
         flex-direction: column;
         gap: 1rem;
         align-items: flex-start;
     }
-    
+
     .stats-grid,
     .cards-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .tabs {
         overflow-x: scroll;
     }
-    
+
     .toast-container {
         right: 1rem;
         left: 1rem;
     }
-    
+
     .toast {
         min-width: unset;
     }

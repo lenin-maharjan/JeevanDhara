@@ -1,10 +1,12 @@
 const express = require('express');
 const path = require('path');
+const session = require('express-session');
 const cors = require('cors');
 const compression = require('compression');
 const apiRoutes = require('./routes');
 const { errorHandler } = require('./utils/errorHandler');
 const { apiLimiter } = require('./middleware/rateLimiter');
+const { checkAdminAuth } = require('./middleware/adminAuthMiddleware');
 
 // Firebase Admin SDK initialization
 let firebaseInitialized = false;
@@ -45,6 +47,18 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '10mb' }));
 
+// Session configuration
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'jeevan-dhara-secret-key-change-this-in-production',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
 // Rate limiting
 app.use('/api/v1', apiLimiter);
 
@@ -56,13 +70,51 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-// Serve static files for admin panel
-app.use('/admin', express.static(path.join(__dirname, '../public')));
+// Admin Login Routes (public - no auth required)
+app.post('/admin/login', (req, res) => {
+  const { username, password } = req.body;
 
-// Admin panel dashboard route
-app.get('/admin', (req, res) => {
+  const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+
+  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    req.session.isAdmin = true;
+    res.json({ message: 'Login successful' });
+  } else {
+    res.status(401).json({ message: 'Invalid username or password' });
+  }
+});
+
+app.post('/admin/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ message: 'Logout failed' });
+    }
+    res.json({ message: 'Logout successful' });
+  });
+});
+
+// Admin login page (public - no auth required)
+app.get('/admin/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/login.html'));
+});
+
+// Admin dashboard route (protected)
+app.get('/admin/dashboard', checkAdminAuth, (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
+
+// Redirect /admin to login or dashboard based on auth status
+app.get('/admin', (req, res) => {
+  if (req.session && req.session.isAdmin) {
+    res.redirect('/admin/dashboard');
+  } else {
+    res.redirect('/admin/login');
+  }
+});
+
+// Serve static files for admin panel
+app.use('/admin', express.static(path.join(__dirname, '../public')));
 
 // API Routes
 app.use('/api/v1', apiRoutes);
