@@ -57,6 +57,7 @@ class ApiService {
     } on TimeoutException {
       throw Exception('Request timed out. Please try again.');
     } catch (e) {
+      print('Network error details: $e'); // Debug print
       throw Exception('Network error: $e');
     }
   }
@@ -116,7 +117,8 @@ class ApiService {
     } else {
       final body = response.body.isNotEmpty ? jsonDecode(response.body) : {};
       final message = body['message'] ?? 'Error ${response.statusCode}';
-      throw Exception(message);
+      final details = body['error'] != null ? ': ${body['error']}' : '';
+      throw Exception('$message$details');
     }
   }
 
