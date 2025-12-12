@@ -4,7 +4,8 @@ const {
     updateFCMToken,
     getCurrentUser,
     createUserAfterFirebaseSignup,
-    linkFirebaseUser
+    linkFirebaseUser,
+    updateProfile
 } = require('../controllers/authController');
 
 // Firebase Auth Middleware
@@ -28,6 +29,9 @@ router.post('/link-firebase', verifyFirebaseToken, linkFirebaseUser);
 
 // Update FCM token (requires Firebase auth)
 router.post('/fcm-token', verifyFirebaseToken, linkMongoUser, updateFCMToken);
+
+// Update user profile (requires Firebase auth)
+router.put('/profile', verifyFirebaseToken, linkMongoUser, updateProfile);
 
 // Get user profile by ID (public - for viewing other users)
 router.get('/profile/:userType/:userId', getProfile);

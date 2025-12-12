@@ -211,10 +211,60 @@ const updateFCMToken = async (req, res) => {
   }
 };
 
+/**
+ * Update user profile
+ * Requires Firebase Auth middleware
+ */
+const updateProfile = async (req, res) => {
+  try {
+    const { userId, userType } = req.user;
+    const updates = req.body;
+
+    // Prevent updating sensitive fields
+    delete updates.password;
+    delete updates.email;
+    delete updates.firebaseUid;
+    delete updates._id;
+    delete updates.userType;
+
+    let updatedUser = null;
+
+    switch (userType) {
+      case 'requester':
+        updatedUser = await Requester.findByIdAndUpdate(userId, updates, { new: true });
+        break;
+      case 'donor':
+        updatedUser = await Donor.findByIdAndUpdate(userId, updates, { new: true });
+        break;
+      case 'hospital':
+        updatedUser = await Hospital.findByIdAndUpdate(userId, updates, { new: true });
+        break;
+      case 'blood_bank':
+        updatedUser = await BloodBank.findByIdAndUpdate(userId, updates, { new: true });
+        break;
+      default:
+        return res.status(400).json({ message: 'Invalid user type' });
+    }
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({
+      message: 'Profile updated successfully',
+      user: { ...updatedUser.toObject(), userType }
+    });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({ message: 'Failed to update profile', error: error.message });
+  }
+};
+
 module.exports = {
   getCurrentUser,
   createUserAfterFirebaseSignup,
   linkFirebaseUser,
   getProfile,
-  updateFCMToken
+  updateFCMToken,
+  updateProfile
 };
