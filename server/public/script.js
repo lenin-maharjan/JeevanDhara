@@ -93,50 +93,58 @@ async function loadStats() {
 // Load pending hospitals
 async function loadPendingHospitals() {
     try {
-        const response = await fetch(`${API_BASE}/hospitals/pending`);
+        const response = await fetchWithAuth(`${API_BASE}/hospitals/pending`);
         const result = await response.json();
         data.pendingHospitals = result.hospitals || [];
         renderHospitals('pending-hospitals-list', data.pendingHospitals, true);
         updateTabBadge('tab-badge-ph', result.count || 0);
     } catch (error) {
-        console.error('Error loading pending hospitals:', error);
+        if (error.message !== 'Unauthorized') {
+            console.error('Error loading pending hospitals:', error);
+        }
     }
 }
 
 // Load verified hospitals
 async function loadVerifiedHospitals() {
     try {
-        const response = await fetch(`${API_BASE}/hospitals/verified`);
+        const response = await fetchWithAuth(`${API_BASE}/hospitals/verified`);
         const result = await response.json();
         data.verifiedHospitals = result.hospitals || [];
         renderHospitals('verified-hospitals-list', data.verifiedHospitals, false);
     } catch (error) {
-        console.error('Error loading verified hospitals:', error);
+        if (error.message !== 'Unauthorized') {
+            console.error('Error loading verified hospitals:', error);
+        }
     }
 }
 
 // Load pending blood banks
 async function loadPendingBloodBanks() {
     try {
-        const response = await fetch(`${API_BASE}/blood-banks/pending`);
+        const response = await fetchWithAuth(`${API_BASE}/blood-banks/pending`);
         const result = await response.json();
         data.pendingBloodBanks = result.bloodBanks || [];
         renderBloodBanks('pending-bloodbanks-list', data.pendingBloodBanks, true);
         updateTabBadge('tab-badge-pb', result.count || 0);
     } catch (error) {
-        console.error('Error loading pending blood banks:', error);
+        if (error.message !== 'Unauthorized') {
+            console.error('Error loading pending blood banks:', error);
+        }
     }
 }
 
 // Load verified blood banks
 async function loadVerifiedBloodBanks() {
     try {
-        const response = await fetch(`${API_BASE}/blood-banks/verified`);
+        const response = await fetchWithAuth(`${API_BASE}/blood-banks/verified`);
         const result = await response.json();
         data.verifiedBloodBanks = result.bloodBanks || [];
         renderBloodBanks('verified-bloodbanks-list', data.verifiedBloodBanks, false);
     } catch (error) {
-        console.error('Error loading verified blood banks:', error);
+        if (error.message !== 'Unauthorized') {
+            console.error('Error loading verified blood banks:', error);
+        }
     }
 }
 
