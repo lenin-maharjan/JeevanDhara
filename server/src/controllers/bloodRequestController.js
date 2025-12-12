@@ -161,11 +161,19 @@ const cancelBloodRequest = async (req, res) => {
 
 const getMyBloodRequests = async (req, res) => {
     try {
+        // DEBUGGING: Trace why requests are empty
+        const count = await BloodRequest.countDocuments({ requester: req.params.requesterId });
+        const allCount = await BloodRequest.countDocuments({});
+
+        throw new Error(`DEBUG: ID=${req.params.requesterId} Count=${count} Total=${allCount}`);
+
+        /* 
         const requests = await BloodRequest.find({ requester: req.params.requesterId })
             .populate('requester', 'fullName')
             .populate('donor', 'fullName')
             .sort({ createdAt: -1 });
         res.json(requests);
+        */
     } catch (error) {
         res.status(500).json({ message: 'Error fetching blood requests', error: error.message });
     }
