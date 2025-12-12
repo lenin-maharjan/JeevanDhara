@@ -117,41 +117,70 @@ class InitialSplashScreen extends StatelessWidget {
   }
 }
 
-// 4. AuthWrapper: Handles Auto-Login Logic using FutureBuilder
-class AuthWrapper extends StatelessWidget {
+// 4. AuthWrapper: Handles Auto-Login Logic with Splash Screen
+class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      // We start the auto-login check here. 
-      // Note: tryAutoLogin should ideally handle its own errors.
-      future: Provider.of<AuthProvider>(context, listen: false).tryAutoLogin(),
-      builder: (context, snapshot) {
-        // If still waiting, show splash
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const InitialSplashScreen();
-        }
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
 
-        // Once done, check the auth state using Consumer
-        // We use Consumer so that if the user Logs Out later, this widget rebuilds
-        // and switches back to LoginScreen.
-        return Consumer<AuthProvider>(
-          builder: (context, auth, _) {
-            if (auth.isAuthenticated) {
-              final user = auth.user;
-              switch (user?.userType) {
-                case 'requester': return const MainScreen();
-                case 'donor': return const DonorMainScreen();
-                case 'hospital': return const HospitalMainScreen();
-                case 'blood_bank': return const BloodBankMainScreen();
-                default: return const LoginScreen();
-              }
-            } else {
+class _AuthWrapperState extends State<AuthWrapper> {
+  bool _isLoading = true;
+  bool _authChecked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    try {
+      // Show splash screen for at least 2 seconds for better UX
+      await Future.wait([
+        Provider.of<AuthProvider>(context, listen: false).tryAutoLogin(),
+        Future.delayed(const Duration(seconds: 2)),
+      ]);
+    } catch (e) {
+      print("Auto-login error: $e");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _authChecked = true;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Show splash screen while loading
+    if (_isLoading || !_authChecked) {
+      return const InitialSplashScreen();
+    }
+
+    // Once loaded, show the appropriate screen based on auth state
+    return Consumer<AuthProvider>(
+      builder: (context, auth, _) {
+        if (auth.isAuthenticated) {
+          final user = auth.user;
+          switch (user?.userType) {
+            case 'requester':
+              return const MainScreen();
+            case 'donor':
+              return const DonorMainScreen();
+            case 'hospital':
+              return const HospitalMainScreen();
+            case 'blood_bank':
+              return const BloodBankMainScreen();
+            default:
               return const LoginScreen();
-            }
-          },
-        );
+          }
+        } else {
+          return const LoginScreen();
+        }
       },
     );
   }

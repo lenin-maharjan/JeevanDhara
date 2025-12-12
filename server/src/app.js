@@ -35,6 +35,10 @@ try {
 
 const app = express();
 
+// Trust the first proxy (Render load balancer)
+// This is required for secure cookies to work behind a proxy
+app.set('trust proxy', 1);
+
 // Security & Performance Middleware
 app.use(compression()); // Compress responses
 app.use(cors({
