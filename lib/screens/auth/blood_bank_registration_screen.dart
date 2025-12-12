@@ -129,12 +129,14 @@ class _BloodBankRegistrationScreenState extends State<BloodBankRegistrationScree
       };
 
       try {
-        await Provider.of<AuthProvider>(context, listen: false).register({
+        final success = await Provider.of<AuthProvider>(context, listen: false).register({
           ...data,
           'userType': 'blood_bank',
         });
 
-        if (mounted) {
+        if (!mounted) return;
+
+        if (success) {
           showDialog(
             context: context,
             barrierDismissible: false,
@@ -157,10 +159,12 @@ class _BloodBankRegistrationScreenState extends State<BloodBankRegistrationScree
               );
             },
           );
+        } else {
+          _showErrorDialog(Provider.of<AuthProvider>(context, listen: false).errorMessage ?? 'Registration Failed');
         }
       } catch (e) {
         if (mounted) {
-          _showErrorDialog(Provider.of<AuthProvider>(context, listen: false).errorMessage ?? 'Registration Failed');
+          _showErrorDialog('An unexpected error occurred: $e');
         }
       } finally {
         if (mounted) {

@@ -9,7 +9,7 @@ const bloodBankSchema = new mongoose.Schema({
   city: { type: String, required: true },
   district: { type: String, required: true },
   contactPerson: { type: String, required: true },
-  designation: { type: String, required: true },
+  designation: { type: String },
   storageCapacity: { type: Number, required: true },
   emergencyService24x7: { type: Boolean, default: false },
   componentSeparation: { type: Boolean, default: false },

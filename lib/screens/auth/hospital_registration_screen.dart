@@ -127,12 +127,14 @@ class _HospitalRegistrationScreenState extends State<HospitalRegistrationScreen>
       };
 
       try {
-        await Provider.of<AuthProvider>(context, listen: false).register({
+        final success = await Provider.of<AuthProvider>(context, listen: false).register({
           ...data,
           'userType': 'hospital',
         });
         
-        if (mounted) {
+        if (!mounted) return;
+
+        if (success) {
           showDialog(
             context: context,
             barrierDismissible: false,
@@ -155,10 +157,12 @@ class _HospitalRegistrationScreenState extends State<HospitalRegistrationScreen>
               );
             },
           );
+        } else {
+          _showErrorDialog(Provider.of<AuthProvider>(context, listen: false).errorMessage ?? 'Registration Failed');
         }
       } catch (e) {
         if (mounted) {
-          _showErrorDialog(Provider.of<AuthProvider>(context, listen: false).errorMessage ?? 'Registration Failed');
+          _showErrorDialog('An unexpected error occurred: $e');
         }
       } finally {
         if (mounted) {
