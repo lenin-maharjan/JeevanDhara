@@ -169,8 +169,8 @@ const getMyBloodRequests = async (req, res) => {
 
 
         const requests = await BloodRequest.find({ requester: req.params.requesterId })
-            // .populate('requester', 'fullName')
-            // .populate('donor', 'fullName')
+            .populate('requester', 'fullName')
+            .populate('donor', 'fullName')
             .sort({ createdAt: -1 });
         res.json(requests);
 
