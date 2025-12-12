@@ -640,7 +640,7 @@ class _RequesterProfileScreenState extends State<RequesterProfileScreen> {
             _buildContactRow(
               Icons.location_on_outlined,
               translate('location'),
-              user?.fullAddress ?? user?.hospitalLocation ?? user?.location ?? translate('add_location'), // Show full address first
+              user?.hospitalLocation ?? user?.location ?? translate('add_location'), // Show full address first
             ),
             const SizedBox(height: 16),
             _buildContactRow(
